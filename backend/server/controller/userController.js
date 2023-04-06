@@ -21,7 +21,7 @@ const registration = async (req, res) => {
         .send({ message: "User Registered Successfully", user: user });
     }
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send({error: error.message});
   }
 };
 
@@ -50,7 +50,7 @@ const login = async (req, res) => {
       res.status(401).send({ error: "Invalid login details" });
     }
   } catch (error) {
-    res.status(500).send(error);
+    res.status(500).send({error: error.message});
   }
 };
 

@@ -38,4 +38,34 @@ const getAllTodos = async (req, res) => {
     }
 }
 
-module.exports = { createTodo, updateTodoStatus, getAllTodos };
+const deleteTodo = async (req, res) => {
+    try {
+        let todo = await TodoModel.findByIdAndDelete(req.params.id)
+        res.status(200).send({todo: todo, message:"Todo deleted successfully"})
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
+}
+
+const countTodo = async (req, res) => {
+  try {
+    let pending = await TodoModel.find({status:'Pending'}).count();
+    let completed = await TodoModel.find({status:'Completed'}).count();
+    let cancelled = await TodoModel.find({status:'Cancelled'}).count();
+    res.status(200).send({pending:pending, completed:completed, cancelled:cancelled})
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+}
+
+const todoListByStatus = async (req, res) => {
+  try {
+    let pending = await TodoModel.find({status:'Pending'}).sort({priority:1});
+    let completed = await TodoModel.find({status:'Completed'}).sort({priority:1});
+    let cancelled = await TodoModel.find({status:'Cancelled'}).sort({priority:1});
+    res.status(200).send({pending:pending, completed:completed, cancelled:cancelled})
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+}
+module.exports = { createTodo, updateTodoStatus, getAllTodos, deleteTodo, countTodo, todoListByStatus };
