@@ -2,10 +2,12 @@ const TodoModel = require("../model/todoSchema");
 
 const createTodo = async (req, res) => {
   try {
+    let task = req.body
+    if(!task) throw new Error('Todo details not found');
     const newTodo = new TodoModel({
-      text: req.body.text,
-      priority: req.body.priority,
-      status: req.body.status,
+      text: task.text,
+      priority: task.priority,
+      status: String(task.status).toLowerCase(),
     });
     const todo = await newTodo.save();
     res.status(201).send({ message: "Todo created successfully", todo: todo });
@@ -16,7 +18,11 @@ const createTodo = async (req, res) => {
 
 const updateTodoStatus = async (req, res) => {
   try {
-    const updateStatus = await TodoModel.updateOne({_id: req.body.todoId},{status: req.body.status});
+    let todoId = req.body.todoId;
+    if(!todoId) throw new Error("Todo ID not found")
+    let status = String(req.body.status).toLowerCase();
+    if(!status) throw new Error("Todo status not found")
+    const updateStatus = await TodoModel.updateOne({_id: todoId},{status: status});
     if(updateStatus.modifiedCount > 0){
         res.status(200).send({message:"Todo status updated successfully"})
     }else{
@@ -49,9 +55,9 @@ const deleteTodo = async (req, res) => {
 
 const countTodo = async (req, res) => {
   try {
-    let pending = await TodoModel.find({status:'Pending'}).count();
-    let completed = await TodoModel.find({status:'Completed'}).count();
-    let cancelled = await TodoModel.find({status:'Cancelled'}).count();
+    let pending = await TodoModel.find({status:'pending'}).count();
+    let completed = await TodoModel.find({status:'completed'}).count();
+    let cancelled = await TodoModel.find({status:'cancelled'}).count();
     res.status(200).send({pending:pending, completed:completed, cancelled:cancelled})
   } catch (error) {
     res.status(500).send({ error: error.message });
@@ -60,9 +66,9 @@ const countTodo = async (req, res) => {
 
 const todoListByStatus = async (req, res) => {
   try {
-    let pending = await TodoModel.find({status:'Pending'}).sort({priority:1});
-    let completed = await TodoModel.find({status:'Completed'}).sort({priority:1});
-    let cancelled = await TodoModel.find({status:'Cancelled'}).sort({priority:1});
+    let pending = await TodoModel.find({status:'pending'}).sort({priority:1});
+    let completed = await TodoModel.find({status:'completed'}).sort({priority:1});
+    let cancelled = await TodoModel.find({status:'cancelled'}).sort({priority:1});
     res.status(200).send({pending:pending, completed:completed, cancelled:cancelled})
   } catch (error) {
     res.status(500).send({ error: error.message });

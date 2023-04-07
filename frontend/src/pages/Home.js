@@ -40,20 +40,21 @@ export let HomePage = () => {
       todoId,
       status,
     };
-    RestService.updateTodoStatus(body, accessToken).then((res) => {
-      Toast.fire({
-        icon: "success",
-        title: res?.message,
+    RestService.updateTodoStatus(body, accessToken)
+      .then((res) => {
+        Toast.fire({
+          icon: "success",
+          title: res?.message,
+        });
+        loadData();
+      })
+      .catch((error) => {
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "Todo status updation failed",
+        });
       });
-      loadData();
-    })
-    .catch((error)=>{
-      console.log(error)
-      Toast.fire({
-        icon: "error",
-        title: "Todo status updation failed",
-      });
-    })
   };
 
   let handleDelete = (todoId) => {
@@ -67,12 +68,13 @@ export let HomePage = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        RestService.deleteTodo(todoId, accessToken).then((res) => {
-          loadData();
-        })
-        .catch((error)=>{
-          console.log(error)
-        })
+        RestService.deleteTodo(todoId, accessToken)
+          .then((res) => {
+            loadData();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
         Swal.fire("Deleted!", "Todo has been deleted.", "success");
       }
     });
@@ -131,7 +133,7 @@ export let HomePage = () => {
                     Create new todo
                   </div>
                 </Card.Text>
-                {tasks.length &&
+                {tasks.length ? (
                   tasks.map((task, index) => (
                     <Row key={index}>
                       <Col md={9}>
@@ -146,9 +148,9 @@ export let HomePage = () => {
                             >{`(${task.priority})`}</div>
                             <div style={{ marginLeft: "10px" }}>
                               [
-                              {task.status == "Completed" ? (
+                              {task.status == "completed" ? (
                                 <i className="fa fa-check me-2 text-success" />
-                              ) : task.status == "Cancelled" ? (
+                              ) : task.status == "cancelled" ? (
                                 <i className="fa fa-close me-2 text-danger" />
                               ) : (
                                 " "
@@ -166,7 +168,7 @@ export let HomePage = () => {
                             width: "40px",
                             height: "40px",
                           }}
-                          onClick={() => handleStatus("Completed", task?._id)}
+                          onClick={() => handleStatus("completed", task?._id)}
                         >
                           <i className="fa fa-check me-2" />
                         </div>
@@ -177,7 +179,7 @@ export let HomePage = () => {
                             width: "40px",
                             height: "40px",
                           }}
-                          onClick={() => handleStatus("Cancelled", task?._id)}
+                          onClick={() => handleStatus("cancelled", task?._id)}
                         >
                           <i className="fa fa-close me-2" />
                         </div>
@@ -194,7 +196,12 @@ export let HomePage = () => {
                         </div>
                       </Col>
                     </Row>
-                  ))}
+                  ))
+                ) : (
+                  <div className="bg-light rounded mb-2 p-2 text-center">
+                    <div>No Todos Found</div>
+                  </div>
+                )}
               </Card.Body>
             </Card>
           </Col>

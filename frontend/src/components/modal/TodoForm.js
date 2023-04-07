@@ -37,7 +37,7 @@ export let TodoForm = ({ show, handleClose }) => {
             let body = {
                 text: task,
                 priority: priority,
-                status: 'Pending'
+                status: 'pending'
             }
             let token = localStorage.getItem('token')
             RestService.createTodo(body, token)
